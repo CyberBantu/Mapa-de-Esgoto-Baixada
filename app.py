@@ -6,6 +6,7 @@ import geobr
 # Carrega os dados
 mapa = geobr.read_census_tract(code_tract=33)
 dados_ibge = pd.read_excel('Baixada_esgoto.xlsx')
+dados_ibge['Porc_geral'] = round(dados_ibge['Porc_geral'], 2)
 mapa['code_tract'] = pd.to_numeric(mapa['code_tract'], errors='coerce')
 dados_ibge['Cod_setor'] = pd.to_numeric(dados_ibge['Cod_setor'], errors='coerce')
 resultado = pd.merge(mapa, dados_ibge, left_on='code_tract', right_on='Cod_setor', how='inner')
@@ -13,8 +14,9 @@ resultado.crs = "EPSG:4326"  # Define o CRS como WGS
 
 # Exibe o gráfico no Streamlit
 st.set_page_config(layout="wide")
-st.header('Mapa de Esgoto a Céu Aberto na Baixada Fluminense')
-st.caption('Fonte - Censo de 2010')
+st.header('Mapeamento do Esgoto a Céu Aberto na Baixada Fluminense em 2010.')
+st.caption('Fonte - Censo de 2010 - Elaborado por Christian Basilio')
+st.info('Os dados foram coletados do Censo de 2010, com o objetivo principal de oferecer um panorama completo do percentual de domicílios por setor censitário na Baixada Fluminense que possuem esgoto a céu aberto nas proximidades.')
 st.markdown(
     """
     <style>
@@ -34,7 +36,7 @@ fig = px.choropleth_mapbox(resultado,
                             mapbox_style="carto-positron",
                             center={"lat": resultado.centroid.y.mean(), "lon": resultado.centroid.x.mean()},
                             zoom=10,
-                            opacity=0.35,
+                            opacity=0.25,
                             labels={'Porc_geral': 'Esgoto a Céu Aberto (%)',
                                     'name_muni': 'Município',
                                     'zone': 'Zona',
